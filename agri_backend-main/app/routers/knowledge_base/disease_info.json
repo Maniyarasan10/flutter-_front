@@ -1,0 +1,11 @@
+[
+  {
+    "category": "Wheat Diseases",
+    "items": [
+      {
+        "name": {"en": "Rust", "ta": "ரஸ்ட்"},
+        "symptoms": {"en": ["Yellow spots"], "ta": ["மஞ்சள் புள்ளிகள்"]}
+      }
+    ]
+  }
+]

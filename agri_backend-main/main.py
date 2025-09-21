@@ -1,0 +1,45 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.routers import disease, chatbot, marketplace, orders, products
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()  # This loads .env into environment variables
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if GEMINI_API_KEY and GEMINI_API_KEY.startswith('"') and GEMINI_API_KEY.endswith('"'):
+    GEMINI_API_KEY = GEMINI_API_KEY[1:-1]
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="Agri Project Backend",
+    description="API backend for agriculture app with e-commerce, chatbot, and crop disease detection",
+    version="1.0.0"
+)
+
+# Use startup event to initialize services
+@app.on_event("startup")
+async def startup_event():
+    chatbot.start_chatbot_services()
+
+    
+# ✅ Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],       # allow all origins (you can restrict to specific domains later)
+    allow_credentials=True,
+    allow_methods=["*"],       # allow all HTTP methods
+    allow_headers=["*"],       # allow all headers
+)
+
+# Register routers
+app.include_router(disease.router, prefix="/disease", tags=["Disease Detection"])
+app.include_router(chatbot.router, prefix="/chatbot", tags=["AI Chatbot"])
+app.include_router(marketplace.router, prefix="/products", tags=["Marketplace"])
+app.include_router(orders.router, prefix="/orders", tags=["Orders"])
+app.include_router(products.router, prefix="/products", tags=["Products"])
+
+# Root endpoint
+@app.get("/")
+def root():
+    return {"message": "Agri Project Backend is running 🚀"}
